@@ -9,7 +9,7 @@ public class MessageReceiveUntypedActor extends UntypedActor {
 
     public void onReceive(Object message) throws Exception {
         if (message instanceof String) {
-            log.info("Received String message: {}", message);
+            log.info("Value: {}", message);
             //getSender().tell(message, getSelf());
         } else
             unhandled(message);
