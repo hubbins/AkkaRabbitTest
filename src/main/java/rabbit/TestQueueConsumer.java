@@ -17,6 +17,6 @@ public class TestQueueConsumer extends DefaultConsumer {
 
     @Override
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
-        destinationActor.tell(new String(body), ActorRef.noSender());
+        this.destinationActor.tell(new String(body), ActorRef.noSender());
     }
 }
