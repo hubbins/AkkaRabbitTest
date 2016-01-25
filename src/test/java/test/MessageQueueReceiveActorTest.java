@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class MessageQueueReceiveActorTest {
 
-    final ActorSystem actorSystem = ActorSystem.create("rabbitSystem", ConfigFactory.load());
+    final ActorSystem actorSystem = ActorSystem.create("rabbitTest", ConfigFactory.load());
     final Config config = this.actorSystem.settings().config();
 
     //@Test
