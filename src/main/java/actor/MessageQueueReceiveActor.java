@@ -14,33 +14,24 @@ import rabbit.TestQueueConsumer;
 public class MessageQueueReceiveActor extends AbstractActor {
     protected final LoggingAdapter log = Logging.getLogger(context().system(), this);
     final Config config = context().system().settings().config();
-    private TestQueueConsumer testConsumer;
-    private Connection conn;
+    final String queueName = this.config.getString("queue.name");
     private Channel channel;
 
     private MessageQueueReceiveActor() {
-
         receive(ReceiveBuilder.
                 match(String.class, s -> {
                     log.info("Received String message: {}", s);
                 }).
                 matchAny(o -> log.info("received unknown message")).build()
         );
-
     }
 
     @Override
     public void preStart() {
-
         try {
-            ConnectionFactory factory = new ConnectionFactory();
-            this.conn = factory.newConnection();
-            this.channel = conn.createChannel();
-
-            this.channel.queueDeclare(config.getString("test.queueName"), false, false, false, null);
-            this.testConsumer = new TestQueueConsumer(self(), this.channel);
-            this.channel.basicConsume(config.getString("test.queueName"), true, this.testConsumer);
-
+            this.channel = this.createChannel();
+            this.channel.queueDeclare(this.queueName, false, false, false, null);
+            this.channel.basicConsume(this.queueName, true, new TestQueueConsumer(self(), this.channel));
             log.info("preStart() succeeded");
         } catch (Exception ex) {
             log.error(ex, "error in preStart()");
@@ -49,15 +40,19 @@ public class MessageQueueReceiveActor extends AbstractActor {
 
     @Override
     public void postStop() {
-
         try {
+            Connection conn = this.channel.getConnection();
             this.channel.close();
-            this.conn.close();
-
+            conn.close();
             log.info("postStop() succeeded");
         } catch (Exception ex) {
             log.error(ex, "error in postStop()");
         }
+    }
 
+    private Channel createChannel() throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        Connection conn = factory.newConnection();
+        return conn.createChannel();
     }
 }

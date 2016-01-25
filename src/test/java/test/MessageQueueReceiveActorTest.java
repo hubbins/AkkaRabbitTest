@@ -20,6 +20,7 @@ public class MessageQueueReceiveActorTest {
 
     final ActorSystem actorSystem = ActorSystem.create("rabbitTest", ConfigFactory.load());
     final Config config = this.actorSystem.settings().config();
+    final String queueName = this.config.getString("queue.name");
 
     //@Test
     public void itShouldSendAMessage() {
@@ -32,19 +33,16 @@ public class MessageQueueReceiveActorTest {
         TestActorRef<MessageQueueReceiveActor> actorRef = TestActorRef.create(this.actorSystem, Props.create(MessageQueueReceiveActor.class));
 
         try {
-
             ConnectionFactory factory = new ConnectionFactory();
             Connection conn = factory.newConnection();
             Channel channel = conn.createChannel();
 
-            //channel.queueDeclare("test_queue", false, false, false, null);
-            channel.basicPublish("", this.config.getString("test.queueName"), null, "test message 123".getBytes());
+            channel.basicPublish("", this.queueName, null, "test message 123".getBytes());
 
             channel.close();
             conn.close();
 
             actorRef.tell(PoisonPill.getInstance(), ActorRef.noSender());
-
         } catch (Exception ex) {
             System.out.println(ex);
         }
