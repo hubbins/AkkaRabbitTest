@@ -7,9 +7,8 @@ import akka.japi.pf.ReceiveBuilder;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ExceptionHandler;
 import com.typesafe.config.Config;
-import rabbit.TestQueueConsumer;
+import rabbit.QueueConsumer;
 
 public class MessageQueueReceiveActor extends AbstractActor {
     protected final LoggingAdapter log = Logging.getLogger(context().system(), this);
@@ -31,7 +30,7 @@ public class MessageQueueReceiveActor extends AbstractActor {
         try {
             this.channel = this.createChannel();
             this.channel.queueDeclare(this.queueName, false, false, false, null);
-            this.channel.basicConsume(this.queueName, true, new TestQueueConsumer(self(), this.channel));
+            this.channel.basicConsume(this.queueName, true, new QueueConsumer(self(), this.channel));
             log.info("preStart() succeeded");
         } catch (Exception ex) {
             log.error(ex, "error in preStart()");

@@ -6,11 +6,11 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
-public class TestQueueConsumer extends DefaultConsumer {
+public class QueueConsumer extends DefaultConsumer {
 
     private final ActorRef destinationActor;
 
-    public TestQueueConsumer(ActorRef destinationActor, Channel channel) {
+    public QueueConsumer(ActorRef destinationActor, Channel channel) {
         super(channel);
         this.destinationActor = destinationActor;
     }
